@@ -1,0 +1,139 @@
+name: Terraform OCI (Plan, Apply, Destroy)
+
+on:
+  push:
+    branches: [ main, dev ]
+    paths:
+      - 'iac/**'
+  pull_request:
+    branches: [ main, dev ]
+    paths:
+      - 'iac/**'
+  workflow_dispatch:
+    inputs:
+      target_stack:
+        description: 'Directory to apply/destroy'
+        required: true
+        default: 'iac/main-stack'
+        type: choice
+        options:
+          - 'iac/main-stack'
+          - 'iac/remote-backend-stack'
+      target_action:
+        description: 'Select Action'
+        required: true
+        default: 'plan'
+        type: choice
+        options:
+          - 'plan'
+          - 'apply'
+      destroy:
+        description: 'Destroy'
+        required: false
+        default: false
+        type: boolean
+      confirm_destroy_path:
+        description: 'Type the path again to confirm destroy'
+        required: false
+        default: ''
+        type: string
+
+jobs:
+  terraform:
+    name: Terraform OCI Pipeline
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform CLI
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.5.7
+
+      - name: Configure OCI Access Credentials on Runner
+        env:
+          OCI_KEY: ${{ secrets.OCI_PRIVATE_KEY }}
+          SSH_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
+        run: |
+          mkdir -p /home/runner/.oci
+          if [ -z "$OCI_KEY" ]; then
+            echo "❌ ERROR: Secret OCI_PRIVATE_KEY is empty or missing in GitHub Secrets!"
+            exit 1
+          fi
+          echo "$OCI_KEY" > /home/runner/.oci/oci_api_key.pem
+          if ! grep -q "BEGIN" /home/runner/.oci/oci_api_key.pem; then
+            printf "%b\n" "$OCI_KEY" > /home/runner/.oci/oci_api_key.pem
+          fi
+          chmod 600 /home/runner/.oci/oci_api_key.pem
+
+          echo "$SSH_KEY" > /home/runner/.oci/id_ed25519.pub
+          if ! grep -q "BEGIN" /home/runner/.oci/oci_api_key.pem; then
+            echo "❌ ERROR: OCI_PRIVATE_KEY does not contain a valid PEM header (-----BEGIN ... PRIVATE KEY-----)"
+            exit 1
+          fi
+
+      - name: Generate terraform.tfvars in Selected Stack
+        run: |
+          TARGET="${{ inputs.target_stack || 'iac/main-stack' }}"
+          cat <<EOF > ${TARGET}/terraform.tfvars
+          tenancy_ocid        = "${{ secrets.OCI_TENANCY_OCID }}"
+          user_ocid           = "${{ secrets.OCI_USER_OCID }}"
+          fingerprint         = "${{ secrets.OCI_FINGERPRINT }}"
+          private_key_path    = "/home/runner/.oci/oci_api_key.pem"
+          compartment_ocid    = "${{ secrets.OCI_COMPARTMENT_OCID }}"
+          region              = "${{ secrets.OCI_REGION || 'us-ashburn-1' }}"
+          ssh_public_key_path = "/home/runner/.oci/id_ed25519.pub"
+          EOF
+
+      - name: Download Saved State for Selected Stack (from previous runs)
+        uses: dawidd6/action-download-artifact@v6
+        continue-on-error: true
+        with:
+          name: ${{ inputs.target_stack == 'iac/remote-backend-stack' && 'oci-remote-backend-tfstate' || 'oci-main-stack-tfstate' }}
+          path: ${{ inputs.target_stack || 'iac/main-stack' }}
+          search_artifacts: true
+          if_no_artifact_found: ignore
+
+      - name: Terraform Init
+        run: |
+          TARGET="${{ inputs.target_stack || 'iac/main-stack' }}"
+          cd ${TARGET}
+          terraform init
+
+      - name: Terraform Plan
+        if: (inputs.target_action == 'plan' && inputs.destroy != true) || github.event_name != 'workflow_dispatch'
+        run: |
+          TARGET="${{ inputs.target_stack || 'iac/main-stack' }}"
+          cd ${TARGET}
+          terraform plan -no-color
+
+      - name: Terraform Apply
+        if: github.event_name == 'workflow_dispatch' && inputs.target_action == 'apply' && inputs.destroy != true
+        run: |
+          TARGET="${{ inputs.target_stack || 'iac/main-stack' }}"
+          cd ${TARGET}
+          terraform apply -auto-approve -no-color
+
+      - name: Terraform Destroy
+        if: github.event_name == 'workflow_dispatch' && inputs.destroy == true
+        run: |
+          TARGET="${{ inputs.target_stack || 'iac/main-stack' }}"
+          CONFIRM="${{ inputs.confirm_destroy_path }}"
+          if [ "$CONFIRM" != "$TARGET" ]; then
+            echo "❌ ERROR: Confirmation path '$CONFIRM' does not match target stack '$TARGET'."
+            echo "Destroy cancelled for safety!"
+            exit 1
+          fi
+          echo "🔥 Confirmation path verified. Destroying stack: $TARGET"
+          cd ${TARGET}
+          terraform destroy -auto-approve -no-color
+
+      - name: Save Stack State to GitHub Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        continue-on-error: true
+        with:
+          name: ${{ inputs.target_stack == 'iac/remote-backend-stack' && 'oci-remote-backend-tfstate' || 'oci-main-stack-tfstate' }}
+          path: ${{ inputs.target_stack || 'iac/main-stack' }}/terraform.tfstate

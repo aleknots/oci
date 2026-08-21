@@ -1,0 +1,8 @@
+# OCI Authentication Keys (Replace with values from Oracle Cloud Console)
+tenancy_ocid        = "ocid1.tenancy.oc1..aaaaaaaaxxxxxx"
+user_ocid           = "ocid1.user.oc1..aaaaaaaaxxxxxx"
+fingerprint         = "xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx"
+private_key_path    = "~/.ssh/oci_api_key.pem"
+compartment_ocid    = "ocid1.tenancy.oc1..aaaaaaaaxxxxxx" # Same as Tenancy OCID or a custom compartment
+region              = "us-ashburn-1"
+ssh_public_key_path = "~/.ssh/id_rsa.pub"
