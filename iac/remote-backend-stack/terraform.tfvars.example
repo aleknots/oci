@@ -1,8 +1,8 @@
-# OCI Authentication Keys (Replace with your actual values from the Oracle Cloud Console)
+# Chaves de Autenticação OCI (Substitua pelos seus valores reais do Oracle Cloud Console)
 tenancy_ocid     = "ocid1.tenancy.oc1..aaaaaaaaxxxxxx"
 user_ocid        = "ocid1.user.oc1..aaaaaaaaxxxxxx"
 fingerprint      = "xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx"
 private_key_path = "~/.ssh/oci_api_key.pem"
-compartment_ocid = "ocid1.tenancy.oc1..aaaaaaaaxxxxxx" # Same as Tenancy OCID or a custom compartment
+compartment_ocid = "ocid1.tenancy.oc1..aaaaaaaaxxxxxx" # Mesma OCID do Tenancy ou um compartimento personalizado
 region           = "us-ashburn-1"
 bucket_name      = "iac-tfstate-bucket"

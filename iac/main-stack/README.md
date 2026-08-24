@@ -1,103 +1,103 @@
-# ☸️ Native Multi-Node Kubernetes Cluster (Oracle Linux 9) Private Subnet + Bastion Host on Oracle Cloud
+# ☸️ Cluster Kubernetes Multi-Nó Nativo (Oracle Linux 9) Subnet Privada + Bastion Host no Oracle Cloud
 
-This Terraform project automatically provisions a **100% Private 3-Node Native Kubernetes Cluster** + **1 Bastion Host (Jump Box)** running on **Oracle Linux 9 (OL9)** in **Oracle Cloud Infrastructure (OCI)**, leveraging **100% of the Always Free tier**:
+Este projeto Terraform provisiona automaticamente um **Cluster Kubernetes Nativo de 3 Nós 100% Privado** + **1 Bastion Host (Jump Box)** executando no **Oracle Linux 9 (OL9)** na **Oracle Cloud Infrastructure (OCI)**, utilizando **100% do nível Always Free**:
 
-| Instance Name (Hostname) | Role | Shape / Arch | OCPUs | RAM | Subnet | IP | OS |
+| Nome da Instância (Hostname) | Função | Shape / Arq | OCPUs | RAM | Subnet | IP | SO |
 | :--- | :--- | :--- | :---: | :---: | :--- | :--- | :--- |
-| `srv-bst-01` | Bastion Host (Jump Box) | `VM.Standard.E2.1.Micro` (AMD) | 1 OCPU | 1 GB | Public | `10.0.1.5` (+Public) | Oracle Linux 9 |
-| `srv-k8s-01` | Control Plane (Master Node) | `VM.Standard.A1.Flex` (ARM) | 2 OCPUs | 8 GB | Private | `10.0.2.11` (Private) | Oracle Linux 9 |
-| `srv-k8s-02` | Worker Node 01 | `VM.Standard.A1.Flex` (ARM) | 1 OCPU | 8 GB | Private | `10.0.2.12` (Private) | Oracle Linux 9 |
-| `srv-k8s-03` | Worker Node 02 | `VM.Standard.A1.Flex` (ARM) | 1 OCPU | 8 GB | Private | `10.0.2.13` (Private) | Oracle Linux 9 |
+| `srv-bst-01` | Bastion Host (Jump Box) | `VM.Standard.E2.1.Micro` (AMD) | 1 OCPU | 1 GB | Pública | `10.0.1.5` (+Público) | Oracle Linux 9 |
+| `srv-k8s-01` | Control Plane (Nó Master) | `VM.Standard.A1.Flex` (ARM) | 2 OCPUs | 8 GB | Privada | `10.0.2.11` (Privado) | Oracle Linux 9 |
+| `srv-k8s-02` | Nó Worker 01 | `VM.Standard.A1.Flex` (ARM) | 1 OCPU | 8 GB | Privada | `10.0.2.12` (Privado) | Oracle Linux 9 |
+| `srv-k8s-03` | Nó Worker 02 | `VM.Standard.A1.Flex` (ARM) | 1 OCPU | 8 GB | Privada | `10.0.2.13` (Privado) | Oracle Linux 9 |
 | **TOTAL** | **4 VMs** | **1 AMD Micro + 3 ARM Flex** | **5 OCPUs** | **25 GB** | - | - | **Always Free ($ 0.00)** |
 
-> 🛡️ **Maximum Security**: All 3 Kubernetes nodes (`srv-k8s-01`, `srv-k8s-02`, `srv-k8s-03`) are **100% isolated in the Private Subnet (`10.0.2.0/24`)**, without direct public IP addresses. Outbound traffic (system updates/packages) is routed through a **NAT Gateway**, and SSH access is exclusively performed via **Bastion Host ProxyJump (`srv-bst-01`)** using the default **`opc`** user.
+> 🛡️ **Segurança Máxima**: Todos os 3 nós do Kubernetes (`srv-k8s-01`, `srv-k8s-02`, `srv-k8s-03`) estão **100% isolados na Subnet Privada (`10.0.2.0/24`)**, sem endereços IP públicos diretos. O tráfego de saída (atualizações do sistema/pacotes) é roteado através de um **NAT Gateway**, e o acesso SSH é realizado exclusivamente via **ProxyJump no Bastion Host (`srv-bst-01`)** utilizando o usuário padrão **`opc`**.
 
 ---
 
-## 🛠️ Execution Methods
+## 🛠️ Métodos de Execução
 
-### 💻 Method A: Local Terminal Execution
+### 💻 Método A: Execução no Terminal Local
 
-In your terminal, navigate to the stack folder and run Terraform:
+No seu terminal, navegue até a pasta da stack e execute o Terraform:
 
 ```bash
 cd iac/main-stack
 
-# 1. Preview planned infrastructure changes
+# 1. Visualize as alterações de infraestrutura planejadas
 terraform plan
 
-# 2. Apply and create/update resources on Oracle Cloud
+# 2. Aplique e crie/atualize os recursos no Oracle Cloud
 terraform apply
 ```
 
 ---
 
-### 🤖 Method B: Automated CI/CD via GitHub Actions (GitOps)
+### 🤖 Método B: CI/CD Automatizado via GitHub Actions (GitOps)
 
-To enable GitHub Actions automation, register the following **Repository Secrets** under **Settings > Secrets and variables > Actions** in your GitHub repository:
+Para habilitar a automação no GitHub Actions, cadastre as seguintes **Repository Secrets** em **Settings > Secrets and variables > Actions** no seu repositório GitHub:
 
-| Secret | Description | Example |
+| Secret | Descrição | Exemplo |
 | :--- | :--- | :--- |
-| `OCI_TENANCY_OCID` | OCID of your OCI Tenancy | `ocid1.tenancy.oc1..aaaaaaaaxxxxxx` |
-| `OCI_USER_OCID` | OCID of the IAM User | `ocid1.user.oc1..aaaaaaaaxxxxxx` |
-| `OCI_FINGERPRINT` | Fingerprint of the RSA API Key | `bf:f4:0e:a8:42:fa:b1:f9:f5:...` |
-| `OCI_PRIVATE_KEY` | Content of the RSA API Private Key (.pem) | `-----BEGIN RSA PRIVATE KEY-----\n...` |
-| `OCI_COMPARTMENT_OCID` | OCID of the Target Compartment | `ocid1.compartment.oc1..aaaaaaaaxxxxxx` |
-| `OCI_REGION` | (Optional) OCI Region (Default: `us-ashburn-1`) | `us-ashburn-1` or `sa-saopaulo-1` |
-| `SSH_PUBLIC_KEY` | Content of your SSH public key (`cat ~/.ssh/id_rsa.pub`) | `ssh-rsa AAAAB3NzaC1yc2E...` |
+| `OCI_TENANCY_OCID` | OCID do seu Tenancy OCI | `ocid1.tenancy.oc1..aaaaaaaaxxxxxx` |
+| `OCI_USER_OCID` | OCID do Usuário IAM | `ocid1.user.oc1..aaaaaaaaxxxxxx` |
+| `OCI_FINGERPRINT` | Fingerprint da Chave de API RSA | `bf:f4:0e:a8:42:fa:b1:f9:f5:...` |
+| `OCI_PRIVATE_KEY` | Conteúdo da Chave Privada da API RSA (.pem) | `-----BEGIN RSA PRIVATE KEY-----\n...` |
+| `OCI_COMPARTMENT_OCID` | OCID do Compartimento Alvo | `ocid1.compartment.oc1..aaaaaaaaxxxxxx` |
+| `OCI_REGION` | (Opcional) Região OCI (Padrão: `us-ashburn-1`) | `us-ashburn-1` ou `sa-saopaulo-1` |
+| `SSH_PUBLIC_KEY` | Conteúdo da sua chave pública SSH (`cat ~/.ssh/id_rsa.pub`) | `ssh-rsa AAAAB3NzaC1yc2E...` |
 
-> ⚠️ **Important Note on `SSH_PUBLIC_KEY`**: The `SSH_PUBLIC_KEY` secret must be the content of your public key file (e.g. `cat ~/.ssh/id_rsa.pub`) in **OpenSSH format** (single line starting with `ssh-rsa` or `ssh-ed25519`). **DO NOT** use the PEM format (`-----BEGIN PUBLIC KEY-----`), as OCI cloud-init will reject it with `Error: 400-InvalidParameter, Invalid ssh public key type "-----BEGIN"`.
+> ⚠️ **Nota Importante sobre `SSH_PUBLIC_KEY`**: O secret `SSH_PUBLIC_KEY` deve conter o conteúdo do seu arquivo de chave pública (ex: `cat ~/.ssh/id_rsa.pub`) no **formato OpenSSH** (linha única começando com `ssh-rsa` ou `ssh-ed25519`). **NÃO** utilize o formato PEM (`-----BEGIN PUBLIC KEY-----`), pois o cloud-init do OCI irá rejeitá-lo com `Error: 400-InvalidParameter, Invalid ssh public key type "-----BEGIN"`.
 
-#### Pipeline Execution Workflow:
+#### Fluxo de Execução da Pipeline:
 1. **Via Pull Request**:
-   * Opening a Pull Request against `main` automatically triggers `terraform plan` and posts the output to the workflow log.
+   * Abrir um Pull Request para a branch `main` dispara automaticamente o `terraform plan` e publica a saída nos logs do workflow.
 
-2. **Via Commit to `main` or Manual Trigger**:
-   * Merging to `main` (or triggering manually under **Actions > Terraform OCI (Plan, Apply, Destroy) > Run workflow**) runs `terraform apply` or `terraform destroy` directly on Oracle Cloud!
+2. **Via Commit na `main` ou Disparo Manual**:
+   * O merge na `main` (ou disparo manual em **Actions > Terraform OCI (Plan, Apply, Destroy) > Run workflow**) executa `terraform apply` ou `terraform destroy` diretamente no Oracle Cloud!
 
 ---
 
-## 🔑 Accessing Private VMs via SSH ProxyJump (`opc` user)
+## 🔑 Acessando VMs Privadas via SSH ProxyJump (usuário `opc`)
 
-After running `terraform apply` (locally or via GitHub Actions), connect to private instances through the Bastion Host using a single command:
+Após executar o `terraform apply` (localmente ou via GitHub Actions), conecte-se às instâncias privadas através do Bastion Host utilizando um único comando:
 
 ```bash
-# Connect to the Bastion Host
-ssh opc@<PUBLIC_BASTION_IP>
+# Conectar ao Bastion Host
+ssh opc@<IP_PUBLICO_BASTION>
 
-# Connect to the Control Plane (srv-k8s-01) via ProxyJump
-ssh -J opc@<PUBLIC_BASTION_IP> opc@10.0.2.11
+# Conectar ao Control Plane (srv-k8s-01) via ProxyJump
+ssh -J opc@<IP_PUBLICO_BASTION> opc@10.0.2.11
 
-# Connect to Worker Node 01 (srv-k8s-02) via ProxyJump
-ssh -J opc@<PUBLIC_BASTION_IP> opc@10.0.2.12
+# Conectar ao Nó Worker 01 (srv-k8s-02) via ProxyJump
+ssh -J opc@<IP_PUBLICO_BASTION> opc@10.0.2.12
 
-# Connect to Worker Node 02 (srv-k8s-03) via ProxyJump
-ssh -J opc@<PUBLIC_BASTION_IP> opc@10.0.2.13
+# Conectar ao Nó Worker 02 (srv-k8s-03) via ProxyJump
+ssh -J opc@<IP_PUBLICO_BASTION> opc@10.0.2.13
 ```
 
 ---
 
-## 🚀 Post-Terraform Automation via Ansible Roles
+## 🚀 Automação Pós-Terraform via Roles do Ansible
 
-After instances are created on Oracle Cloud (via `terraform apply` or GitHub Actions), execute the Ansible playbook to install native Kubernetes (`systemd`), Flannel CNI, `k9s`, `argocd`, `helm`, `mongosh`, and the complete SRE toolset on Oracle Linux 9.
+Após a criação das instâncias no Oracle Cloud (via `terraform apply` ou GitHub Actions), execute o playbook do Ansible para instalar o Kubernetes nativo (`systemd`), Flannel CNI, `k9s`, `argocd`, `helm`, `mongosh` e todo o conjunto de ferramentas SRE no Oracle Linux 9.
 
-### Quick Start:
-1. Retrieve the public IP of the Bastion Host from Terraform output (`bastion_public_ip`).
-2. Navigate to the Ansible repository at [`ansible/deploy`](../../../ansible/deploy):
+### Início Rápido:
+1. Obtenha o IP público do Bastion Host a partir da saída do Terraform (`bastion_public_ip`).
+2. Navegue até o repositório Ansible em [`ansible/deploy`](../../../ansible/deploy):
    ```bash
    cd ansible/deploy
    cp inventory-oci.ini.example inventory-oci.ini
    ```
-3. Edit `inventory-oci.ini` replacing `<PUBLIC_BASTION_IP>` with the actual public IP.
-4. Test connectivity and run the Ansible Roles playbook:
+3. Edite o `inventory-oci.ini` substituindo `<IP_PUBLICO_BASTION>` pelo IP público real.
+4. Teste a conectividade e execute o playbook de Roles do Ansible:
    ```bash
    ansible all -i inventory-oci.ini -m ping
 
-   # Dedicated playbook:
+   # Playbook dedicado:
    ansible-playbook k8s-cluster-oci.yml -i inventory-oci.ini
 
-   # Or via site.yml entrypoint:
+   # Ou via ponto de entrada site.yml:
    ansible-playbook site.yml -i inventory-oci.ini --tags k8s
    ```
 
-For full documentation, refer to [`ansible/README.md`](../../../ansible/README.md).
+Para ver a documentação completa, consulte [`ansible/README.md`](../../../ansible/README.md).

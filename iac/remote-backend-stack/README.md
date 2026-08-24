@@ -1,20 +1,20 @@
 # 🪣 OCI Terraform - Stack 1: Remote Backend (Object Storage)
 
-This stack creates an **OCI Object Storage Bucket** (Always Free - 20GB) to securely store the `terraform.tfstate` remote state file in Oracle Cloud.
+Esta stack cria um **Bucket no OCI Object Storage** (Always Free - 20GB) para armazenar com segurança o arquivo de estado remoto `terraform.tfstate` no Oracle Cloud.
 
 ---
 
-## 🚀 How to Run
+## 🚀 Como Executar
 
-### 1. Configure `terraform.tfvars`
-Navigate to `iac/remote-backend-stack` and copy the example configuration:
+### 1. Configurar `terraform.tfvars`
+Navegue até `iac/remote-backend-stack` e copie a configuração de exemplo:
 
 ```bash
 cd iac/remote-backend-stack
 cp terraform.tfvars.example terraform.tfvars
 ```
 
-Edit `terraform.tfvars` with your OCI credentials:
+Edite o `terraform.tfvars` com suas credenciais OCI:
 
 ```hcl
 tenancy_ocid     = "ocid1.tenancy.oc1..aaaaaaaaxxxxxx"
@@ -23,13 +23,13 @@ fingerprint      = "bf:f4:0e:a8:42:fa:b1:f9:f5:ff:65:66:1e:bf:c8:a8"
 private_key_path = "~/.ssh/oci_api_key.pem"
 compartment_ocid = "ocid1.tenancy.oc1..aaaaaaaaxxxxxx"
 region           = "us-ashburn-1"
-bucket_name      = "<your-tfstate-bucket-name>"
+bucket_name      = "<seu-nome-de-bucket-tfstate>"
 ```
 
-### 2. Apply the Stack
+### 2. Aplicar a Stack
 ```bash
 terraform init
 terraform apply
 ```
 
-Upon completion, it will output `bucket_name`, `bucket_namespace`, and `s3_endpoint`.
+Ao finalizar, serão exibidos as saídas `bucket_name`, `bucket_namespace` e `s3_endpoint`.
