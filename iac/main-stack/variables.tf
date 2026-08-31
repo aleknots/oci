@@ -106,6 +106,12 @@ variable "enable_resource_scheduler" {
   default     = true
 }
 
+variable "create_scheduler_policy" {
+  type        = bool
+  description = "Create IAM Policy via Terraform (Set to false if policy was created manually or if API user lacks IAM Policy management privileges)"
+  default     = false
+}
+
 variable "scheduler_time_zone" {
   type        = string
   description = "Timezone for OCI Resource Scheduler (Default: America/Sao_Paulo)"
@@ -123,4 +129,5 @@ variable "scheduler_stop_cron" {
   description = "Cron expression for stopping compute instances (Default: 18:30 PM BRT)"
   default     = "30 18 * * *"
 }
+
 

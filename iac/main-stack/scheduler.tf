@@ -3,8 +3,12 @@
 # ------------------------------------------------------------------------------
 
 # 1. IAM Policy required for OCI Resource Scheduler Service
+# Note: Defaults to false via var.create_scheduler_policy because pipeline API credentials 
+# usually lack IAM policy creation permissions (404-NotAuthorizedOrNotFound).
+# Create this policy manually in OCI Console if not already present:
+# "Allow service resource-scheduler to manage instance-family in compartment id <COMPARTMENT_OCID>"
 resource "oci_identity_policy" "resource_scheduler_policy" {
-  count          = var.enable_resource_scheduler ? 1 : 0
+  count          = (var.enable_resource_scheduler && var.create_scheduler_policy) ? 1 : 0
   compartment_id = var.compartment_ocid
   name           = "resource-scheduler-policy"
   description    = "Allows OCI Resource Scheduler service to manage compute instances"
@@ -39,8 +43,6 @@ resource "oci_resource_scheduler_schedule" "start_instances_schedule" {
       id = resources.value.id
     }
   }
-
-  depends_on = [oci_identity_policy.resource_scheduler_policy]
 }
 
 # 3. Schedule to STOP Compute Instances Daily at 18:30 BRT
@@ -68,6 +70,4 @@ resource "oci_resource_scheduler_schedule" "stop_instances_schedule" {
       id = resources.value.id
     }
   }
-
-  depends_on = [oci_identity_policy.resource_scheduler_policy]
 }
