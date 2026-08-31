@@ -102,8 +102,8 @@ variable "boot_volume_size_in_gbs" {
 # OCI Resource Scheduler Configuration
 variable "enable_resource_scheduler" {
   type        = bool
-  description = "Enable automated Start/Stop schedules via OCI Resource Scheduler"
-  default     = true
+  description = "Enable automated Start/Stop schedules via OCI Resource Scheduler. Set to true after granting 'manage resource-schedule-family' policy to the API/CI-CD user group."
+  default     = false
 }
 
 variable "create_scheduler_policy" {
