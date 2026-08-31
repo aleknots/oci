@@ -114,20 +114,21 @@ variable "create_scheduler_policy" {
 
 variable "scheduler_time_zone" {
   type        = string
-  description = "Timezone for OCI Resource Scheduler (Default: America/Sao_Paulo)"
-  default     = "America/Sao_Paulo"
+  description = "Timezone for OCI Resource Scheduler (Default: UTC)"
+  default     = "UTC"
 }
 
 variable "scheduler_start_cron" {
   type        = string
-  description = "Cron expression for starting compute instances (Default: 08:30 AM BRT)"
-  default     = "30 8 * * *"
+  description = "Cron expression for starting compute instances in UTC (Default: 11:30 UTC = 08:30 AM BRT)"
+  default     = "30 11 * * *"
 }
 
 variable "scheduler_stop_cron" {
   type        = string
-  description = "Cron expression for stopping compute instances (Default: 18:30 PM BRT)"
-  default     = "30 18 * * *"
+  description = "Cron expression for stopping compute instances in UTC (Default: 21:30 UTC = 18:30 PM BRT)"
+  default     = "30 21 * * *"
 }
+
 
 
