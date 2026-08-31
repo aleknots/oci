@@ -1,8 +1,15 @@
-# Chaves de Autenticação OCI (Substitua pelos valores do Oracle Cloud Console)
+# OCI Authentication Keys (Replace with values from Oracle Cloud Console)
 tenancy_ocid        = "ocid1.tenancy.oc1..aaaaaaaaxxxxxx"
 user_ocid           = "ocid1.user.oc1..aaaaaaaaxxxxxx"
 fingerprint         = "xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx"
 private_key_path    = "~/.ssh/oci_api_key.pem"
-compartment_ocid    = "ocid1.tenancy.oc1..aaaaaaaaxxxxxx" # Mesma OCID do Tenancy ou um compartimento personalizado
+compartment_ocid    = "ocid1.tenancy.oc1..aaaaaaaaxxxxxx" # Same as Tenancy OCID or a custom compartment
 region              = "us-ashburn-1"
 ssh_public_key_path = "~/.ssh/id_rsa.pub"
+
+# (Optional) OCI Resource Scheduler Settings (Default: 08:30 to 18:30 BRT daily)
+# enable_resource_scheduler = true
+# scheduler_time_zone        = "America/Sao_Paulo"
+# scheduler_start_cron       = "30 8 * * *"
+# scheduler_stop_cron        = "30 18 * * *"
+

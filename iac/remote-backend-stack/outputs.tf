@@ -1,14 +1,14 @@
 output "bucket_name" {
-  description = "Nome do Bucket criado no Object Storage"
+  description = "Name of the created Object Storage Bucket"
   value       = oci_objectstorage_bucket.tf_state_bucket.name
 }
 
 output "bucket_namespace" {
-  description = "Namespace do Object Storage"
+  description = "Object Storage Namespace"
   value       = oci_objectstorage_bucket.tf_state_bucket.namespace
 }
 
 output "s3_endpoint" {
-  description = "Endpoint compatível com S3 para uso na configuração do Backend S3 do Terraform"
+  description = "S3-Compatible Endpoint to use in Terraform S3 Backend Configuration"
   value       = "https://${oci_objectstorage_bucket.tf_state_bucket.namespace}.compat.objectstorage.${var.region}.oraclecloud.com"
 }

@@ -1,100 +1,126 @@
-# Compartimento OCI e Autenticação
+# OCI Compartment and Authentication
 variable "tenancy_ocid" {
   type        = string
-  description = "OCID do Tenancy OCI"
+  description = "OCID of the OCI Tenancy"
 }
 
 variable "user_ocid" {
   type        = string
-  description = "OCID do Usuário OCI"
+  description = "OCID of the OCI User"
 }
 
 variable "fingerprint" {
   type        = string
-  description = "Fingerprint da Chave de API RSA OCI"
+  description = "Fingerprint of the OCI RSA API Key"
 }
 
 variable "private_key_path" {
   type        = string
-  description = "Caminho para a chave privada da API OCI"
+  description = "Path to the OCI API private key"
 }
 
 variable "compartment_ocid" {
   type        = string
-  description = "OCID do Compartimento OCI"
+  description = "OCID of the OCI Compartment"
 }
 
 variable "region" {
   type        = string
-  description = "Região OCI"
+  description = "OCI Region"
   default     = "us-ashburn-1"
 }
 
 variable "ssh_public_key_path" {
   type        = string
-  description = "Caminho para a chave pública OpenSSH para acesso às instâncias Linux"
+  description = "Path to the OpenSSH public key for Linux instance access"
   default     = "~/.ssh/id_rsa.pub"
 }
 
-# Seleção de Sistema Operacional (Padrão: Oracle Linux 9 Nativo OCI)
+# Operating System Selection (Default: Oracle Linux 9 Native OCI)
 variable "os_distribution" {
   type        = string
-  description = "Distribuição do SO: 'Oracle Linux' (9)"
+  description = "OS Distribution: 'Oracle Linux' (9)"
   default     = "Oracle Linux"
 }
 
 variable "os_version" {
   type        = string
-  description = "Versão do SO"
+  description = "OS Version"
   default     = "9"
 }
 
 # Bastion Host (AMD Micro Always Free)
 variable "bastion_shape" {
   type        = string
-  description = "Shape para o Bastion Host (AMD x86_64 Always Free)"
+  description = "Shape for the Bastion Host (AMD x86_64 Always Free)"
   default     = "VM.Standard.E2.1.Micro"
 }
 
-# Configuração de Hardware do Cluster Kubernetes (ARM Ampere A1 Always Free)
+# Kubernetes Cluster Hardware Configuration (ARM Ampere A1 Always Free)
 variable "instance_shape" {
   type        = string
-  description = "Shape para os Nós do Cluster K8s (ARM Ampere A1 Flex Always Free)"
+  description = "Shape for K8s Cluster Nodes (ARM Ampere A1 Flex Always Free)"
   default     = "VM.Standard.A1.Flex"
 }
 
 variable "master_ocpus" {
   type        = number
-  description = "OCPUs para o Nó Master"
+  description = "OCPUs for the Master Node"
   default     = 2
 }
 
 variable "master_memory_in_gbs" {
   type        = number
-  description = "RAM em GB para o Nó Master"
+  description = "RAM in GB for the Master Node"
   default     = 8
 }
 
 variable "worker_count" {
   type        = number
-  description = "Quantidade de Nós Worker"
+  description = "Number of Worker Nodes"
   default     = 2
 }
 
 variable "worker_ocpus" {
   type        = number
-  description = "OCPUs para cada Nó Worker"
+  description = "OCPUs for each Worker Node"
   default     = 1
 }
 
 variable "worker_memory_in_gbs" {
   type        = number
-  description = "RAM em GB para cada Nó Worker"
+  description = "RAM in GB for each Worker Node"
   default     = 8
 }
 
 variable "boot_volume_size_in_gbs" {
   type        = string
-  description = "Tamanho do volume de boot em GB"
+  description = "Boot volume size in GB"
   default     = "50"
 }
+
+# OCI Resource Scheduler Configuration
+variable "enable_resource_scheduler" {
+  type        = bool
+  description = "Enable automated Start/Stop schedules via OCI Resource Scheduler"
+  default     = true
+}
+
+variable "scheduler_time_zone" {
+  type        = string
+  description = "Timezone for OCI Resource Scheduler (Default: America/Sao_Paulo)"
+  default     = "America/Sao_Paulo"
+}
+
+variable "scheduler_start_cron" {
+  type        = string
+  description = "Cron expression for starting compute instances (Default: 08:30 AM BRT)"
+  default     = "30 8 * * *"
+}
+
+variable "scheduler_stop_cron" {
+  type        = string
+  description = "Cron expression for stopping compute instances (Default: 18:30 PM BRT)"
+  default     = "30 18 * * *"
+}
+

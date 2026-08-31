@@ -1,76 +1,76 @@
-# 🌩️ Oracle Cloud Infrastructure (OCI) - Arquitetura de Stacks Terraform
+# 🌩️ Oracle Cloud Infrastructure (OCI) - Terraform Stacks Architecture
 
-Este repositório está estruturado em **duas stacks independentes** seguindo as melhores práticas de SRE e DevSecOps:
+This repository is structured into **two independent stacks** following SRE and DevSecOps best practices:
 
 ```text
 iac/
-├── remote-backend-stack/  # Stack 1: Provisiona o Bucket no OCI Object Storage (Estado Remoto)
-└── main-stack/            # Stack 2: Provisiona 3 VMs para K8s Nativo + Rede VCN + Bastion
+├── remote-backend-stack/  # Stack 1: Provisions OCI Object Storage Bucket (Remote State)
+└── main-stack/            # Stack 2: Provisions 3 Native K8s VMs + VCN Network + Bastion
 ```
 
 ---
 
 ## 🗂️ 1. `remote-backend-stack`
-Cria um **Bucket no OCI Object Storage** (Always Free - 20GB) para armazenar o arquivo `terraform.tfstate` remotamente com versionamento habilitado.
+Creates an **OCI Object Storage Bucket** (Always Free - 20GB) to store the `terraform.tfstate` file remotely with versioning enabled.
 
-### Como aplicar:
+### How to apply:
 ```bash
 cd iac/remote-backend-stack
 
-# 1. Configurar variáveis
+# 1. Configure variables
 cp terraform.tfvars.example terraform.tfvars
 nano terraform.tfvars
 
-# 2. Aplicar
+# 2. Apply
 terraform init
 terraform apply
 ```
 
-Ao finalizar, exibe o `s3_endpoint` e o `bucket_name` criados.
+Upon completion, it outputs the created `s3_endpoint` and `bucket_name`.
 
 ---
 
 ## ☸️ 2. `main-stack`
-Provisiona a infraestrutura completa do cluster Kubernetes de 3 nós (1 Master + 2 Workers) com **4 OCPUs e 24GB de RAM** (Always Free $0.00) juntamente com um Bastion Host dedicado.
+Provisions the complete 3-node Kubernetes cluster infrastructure (1 Master + 2 Workers) with **4 OCPUs and 24GB RAM** (Always Free $0.00) alongside a dedicated Bastion Host.
 
-### Como aplicar:
+### How to apply:
 ```bash
 cd iac/main-stack
 
-# 1. Configurar variáveis
+# 1. Configure variables
 cp terraform.tfvars.example terraform.tfvars
 nano terraform.tfvars
 
-# 2. Aplicar
+# 2. Apply
 terraform init
 terraform apply
 ```
 
 ---
 
-## 🎯 Ordem de Execução Recomendada
-1. Execute **`remote-backend-stack`** primeiro para criar o armazenamento de estado remoto.
-2. Execute **`main-stack`** em seguida para provisionar a rede e o cluster de VMs completo!
+## 🎯 Recommended Execution Order
+1. Run **`remote-backend-stack`** first to create remote state storage.
+2. Run **`main-stack`** next to provision the complete network and VM cluster!
 
 ---
 
-## 🔐 Configuração do GitHub Actions (CI/CD)
+## 🔐 GitHub Actions Configuration (CI/CD)
 
-Para executar a pipeline automatizada do GitHub Actions (`.github/workflows/provisioning-iac-oci.yml`), cadastre as seguintes **Repository Secrets** em **Settings > Secrets and variables > Actions**:
+To run the automated GitHub Actions pipeline (`.github/workflows/provisioning-iac-oci.yml`), register the following **Repository Secrets** under **Settings > Secrets and variables > Actions**:
 
-* `OCI_TENANCY_OCID`: OCID do Tenancy no Oracle Cloud.
-* `OCI_USER_OCID`: OCID do Usuário IAM.
-* `OCI_FINGERPRINT`: Fingerprint da Chave de API RSA.
-* `OCI_PRIVATE_KEY`: Conteúdo da chave privada da API OCI (.pem).
-* `OCI_COMPARTMENT_OCID`: OCID do Compartimento Alvo.
-* `OCI_REGION`: (Opcional) Região OCI (Padrão: `us-ashburn-1`).
-* `SSH_PUBLIC_KEY`: Conteúdo da sua chave pública SSH no formato OpenSSH (ex: `cat ~/.ssh/id_rsa.pub`).
+* `OCI_TENANCY_OCID`: OCID of the Oracle Cloud Tenancy.
+* `OCI_USER_OCID`: OCID of the IAM User.
+* `OCI_FINGERPRINT`: Fingerprint of the RSA API Key.
+* `OCI_PRIVATE_KEY`: Content of the OCI API private key (.pem).
+* `OCI_COMPARTMENT_OCID`: OCID of the Target Compartment.
+* `OCI_REGION`: (Optional) OCI Region (Default: `us-ashburn-1`).
+* `SSH_PUBLIC_KEY`: Content of your SSH public key in OpenSSH format (e.g. `cat ~/.ssh/id_rsa.pub`).
 
 ---
 
-## 🛡️ Permissões Mínimas de IAM (Policy)
+## 🛡️ Minimum IAM Permissions (Policy)
 
-O usuário de automação (ex: `svc_terraform`) deve pertencer ao `TerraformGroup` com as seguintes políticas IAM habilitadas na OCI:
+The automation user (e.g. `svc_terraform`) must belong to `TerraformGroup` with the following IAM policies enabled in OCI:
 
 ```text
 Allow group TerraformGroup to read compartments in tenancy

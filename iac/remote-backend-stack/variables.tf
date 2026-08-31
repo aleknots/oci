@@ -1,43 +1,43 @@
 variable "tenancy_ocid" {
   type        = string
-  description = "OCID do Tenancy no Oracle Cloud"
+  description = "OCID of the Oracle Cloud Tenancy"
 }
 
 variable "user_ocid" {
   type        = string
-  description = "OCID do Usuário no Oracle Cloud"
+  description = "OCID of the Oracle Cloud User"
 }
 
 variable "fingerprint" {
   type        = string
-  description = "Fingerprint da Chave de API RSA"
+  description = "Fingerprint of the RSA API Key"
 }
 
 variable "private_key_path" {
   type        = string
-  description = "Caminho para a chave privada local da API RSA (.pem)"
+  description = "Path to the local RSA API private key (.pem)"
   default     = "~/.ssh/oci_api_key.pem"
 }
 
 variable "compartment_ocid" {
   type        = string
-  description = "OCID do Compartimento Alvo"
+  description = "OCID of the Target Compartment"
 }
 
 variable "region" {
   type        = string
-  description = "Região do Oracle Cloud"
+  description = "Oracle Cloud Region"
   default     = "us-ashburn-1"
 }
 
 variable "bucket_name" {
   type        = string
-  description = "Nome do Bucket do Object Storage para o Remote State do Terraform"
+  description = "Name of the Object Storage Bucket for Terraform Remote State"
   default     = "iac-tfstate-bucket"
 }
 
 variable "ssh_public_key_path" {
   type        = string
-  description = "Caminho para a chave pública SSH"
+  description = "Path to the SSH public key"
   default     = "~/.ssh/id_rsa.pub"
 }

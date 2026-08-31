@@ -7,8 +7,8 @@ terraform {
     }
   }
 
-  # Opcional: Para usar o OCI Object Storage via backend S3 API, gere uma Customer Secret Key no Console OCI
-  # e configure os GitHub Secrets ou variáveis de ambiente correspondentes.
+  # Optional: To use OCI Object Storage via S3 API backend, generate a Customer Secret Key in OCI Console
+  # and configure GitHub Secrets or environment variables accordingly.
   #
   # backend "s3" {
   #   bucket                      = "iac-tfstate-bucket"
