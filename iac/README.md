@@ -79,5 +79,5 @@ Allow group TerraformGroup to manage instance-family in tenancy
 Allow group TerraformGroup to manage volume-family in tenancy
 Allow group TerraformGroup to manage object-family in tenancy
 Allow group TerraformGroup to manage resource-schedule-family in tenancy
-Allow service resourcescheduler to manage instance-family in tenancy
+Allow service resource_scheduler to manage instance-family in tenancy
 ```
