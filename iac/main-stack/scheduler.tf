@@ -14,7 +14,7 @@ resource "oci_identity_policy" "resource_scheduler_policy" {
   description    = "Allows OCI Resource Scheduler service to manage compute instances"
 
   statements = [
-    "Allow service resource-scheduler to manage instance-family in compartment id ${var.compartment_ocid}"
+    "Allow service resourcescheduler to manage instance-family in compartment id ${var.compartment_ocid}"
   ]
 }
 
