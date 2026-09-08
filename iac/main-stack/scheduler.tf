@@ -1,11 +1,11 @@
 # ------------------------------------------------------------------------------
-# OCI RESOURCE SCHEDULER (Automated Start / Stop Schedules)
+# OCI RESOURCE SCHEDULER (Agendamentos Automáticos de Inicialização / Parada)
 # ------------------------------------------------------------------------------
 
-# 1. IAM Policy required for OCI Resource Scheduler Service
-# Note: Defaults to false via var.create_scheduler_policy because pipeline API credentials 
-# usually lack IAM policy creation permissions (404-NotAuthorizedOrNotFound).
-# Create this policy manually in OCI Console if not already present:
+# 1. Política IAM necessária para o serviço OCI Resource Scheduler
+# Nota: O padrão é false via var.create_scheduler_policy porque credenciais de API da pipeline 
+# geralmente não possuem permissão de criação de políticas IAM (404-NotAuthorizedOrNotFound).
+# Crie esta política manualmente no Console da OCI se ainda não estiver presente:
 # "Allow service resource-scheduler to manage instance-family in compartment id <COMPARTMENT_OCID>"
 resource "oci_identity_policy" "resource_scheduler_policy" {
   count          = (var.enable_resource_scheduler && var.create_scheduler_policy) ? 1 : 0
@@ -18,7 +18,7 @@ resource "oci_identity_policy" "resource_scheduler_policy" {
   ]
 }
 
-# 2. Schedule to START Compute Instances Daily at 08:30 BRT
+# 2. Agendamento para INICIAR instâncias de computação diariamente às 08:30 BRT
 resource "oci_resource_scheduler_schedule" "start_instances_schedule" {
   count              = var.enable_resource_scheduler ? 1 : 0
   action             = "START_RESOURCE"
@@ -45,7 +45,7 @@ resource "oci_resource_scheduler_schedule" "start_instances_schedule" {
   }
 }
 
-# 3. Schedule to STOP Compute Instances Daily at 18:30 BRT
+# 3. Agendamento para PARAR instâncias de computação diariamente às 18:30 BRT
 resource "oci_resource_scheduler_schedule" "stop_instances_schedule" {
   count              = var.enable_resource_scheduler ? 1 : 0
   action             = "STOP_RESOURCE"

@@ -1,19 +1,19 @@
-# Availability Domains Lookup
+# Consulta de Availability Domains (AD)
 data "oci_identity_availability_domains" "ad" {
   compartment_id = var.compartment_ocid
 }
 
-# Automatic selection of compatible AD for AMD Micro shape (in us-ashburn-1 located in AD-3)
+# Seleção automática de AD compatível para o shape AMD Micro (em us-ashburn-1 localizado em AD-3)
 locals {
   bastion_ad = length(data.oci_identity_availability_domains.ad.availability_domains) >= 3 ? data.oci_identity_availability_domains.ad.availability_domains[2].name : data.oci_identity_availability_domains.ad.availability_domains[0].name
   k8s_ad     = data.oci_identity_availability_domains.ad.availability_domains[0].name
 }
 
 # ------------------------------------------------------------------------------
-# DYNAMIC LOOKUP OF LATEST OFFICIAL OS IMAGE (Default: Oracle Linux 9)
+# CONSULTA DINÂMICA DA IMAGEM OFICIAL MAIS RECENTE DO SO (Padrão: Oracle Linux 9)
 # ------------------------------------------------------------------------------
 
-# AMD x86_64 Image for Bastion Host (srv-bst-01)
+# Imagem AMD x86_64 para o Bastion Host (srv-bst-01)
 data "oci_core_images" "srv_bst_image" {
   compartment_id           = var.compartment_ocid
   operating_system         = var.os_distribution == "Ubuntu" ? "Canonical Ubuntu" : "Oracle Linux"
@@ -23,7 +23,7 @@ data "oci_core_images" "srv_bst_image" {
   sort_order               = "DESC"
 }
 
-# ARM64 Image for Kubernetes Cluster Nodes (srv-k8s-01, 02, 03)
+# Imagem ARM64 para os Nós do Cluster Kubernetes (srv-k8s-01, 02, 03)
 data "oci_core_images" "srv_k8s_image" {
   compartment_id           = var.compartment_ocid
   operating_system         = var.os_distribution == "Ubuntu" ? "Canonical Ubuntu" : "Oracle Linux"
@@ -34,7 +34,7 @@ data "oci_core_images" "srv_k8s_image" {
 }
 
 # ------------------------------------------------------------------------------
-# 1. BASTION HOST (srv-bst-01: AMD x86_64 - VM.Standard.E2.1.Micro Always Free in AD-3)
+# 1. BASTION HOST (srv-bst-01: AMD x86_64 - VM.Standard.E2.1.Micro Always Free em AD-3)
 # ------------------------------------------------------------------------------
 resource "oci_core_instance" "srv_bst_01" {
   availability_domain = local.bastion_ad
@@ -53,7 +53,7 @@ resource "oci_core_instance" "srv_bst_01" {
   source_details {
     source_type             = "image"
     source_id               = data.oci_core_images.srv_bst_image.images[0].id
-    boot_volume_size_in_gbs = "50" # Minimum required size for Oracle Linux 9 images on OCI
+    boot_volume_size_in_gbs = "50" # Tamanho mínimo exigido para imagens do Oracle Linux 9 na OCI
   }
 
   metadata = {
@@ -62,7 +62,7 @@ resource "oci_core_instance" "srv_bst_01" {
 }
 
 # ------------------------------------------------------------------------------
-# 2. CONTROL PLANE / MASTER (srv-k8s-01: ARM64 2 OCPUs, 8GB RAM - Private Subnet)
+# 2. CONTROL PLANE / MASTER (srv-k8s-01: ARM64 2 OCPUs, 8GB RAM - Sub-rede Privada)
 # ------------------------------------------------------------------------------
 resource "oci_core_instance" "srv_k8s_01" {
   availability_domain = local.k8s_ad
@@ -77,7 +77,7 @@ resource "oci_core_instance" "srv_k8s_01" {
 
   create_vnic_details {
     subnet_id        = oci_core_subnet.k8s_private_subnet.id
-    assign_public_ip = false # 100% Private!
+    assign_public_ip = false # 100% Privado!
     display_name     = "vnic-srv-k8s-01"
     hostname_label   = "srv-k8s-01"
     private_ip       = "10.0.2.11"
@@ -95,7 +95,7 @@ resource "oci_core_instance" "srv_k8s_01" {
 }
 
 # ------------------------------------------------------------------------------
-# 3. WORKER NODES (srv-k8s-02, srv-k8s-03: ARM64 1 OCPU, 8GB RAM each - Private Subnet)
+# 3. NÓS WORKERS (srv-k8s-02, srv-k8s-03: ARM64 1 OCPU, 8GB RAM cada - Sub-rede Privada)
 # ------------------------------------------------------------------------------
 resource "oci_core_instance" "srv_k8s_worker" {
   count               = var.worker_count
@@ -111,7 +111,7 @@ resource "oci_core_instance" "srv_k8s_worker" {
 
   create_vnic_details {
     subnet_id        = oci_core_subnet.k8s_private_subnet.id
-    assign_public_ip = false # 100% Private!
+    assign_public_ip = false # 100% Privado!
     display_name     = "vnic-srv-k8s-0${count.index + 2}"
     hostname_label   = "srv-k8s-0${count.index + 2}"
     private_ip       = "10.0.2.1${count.index + 2}"

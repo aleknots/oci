@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Total Infrastructure Cleanup and Destruction Script for Oracle Cloud (OCI)
-# Usage: bash iac/scripts/destroy-all.sh
+# Script de Limpeza e Destruição Total de Infraestrutura na Oracle Cloud (OCI)
+# Uso: bash iac/scripts/destroy-all.sh
 # ==============================================================================
 
 set -e
@@ -11,7 +11,7 @@ echo "🚀 [OCI CLEANUP] Starting total infrastructure cleanup for OCI..."
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
-# 1. Run terraform destroy on stacks if terraform.tfvars exists
+# 1. Executa o terraform destroy nas stacks se o terraform.tfvars existir
 if [ -d "${REPO_ROOT}/iac/main-stack" ]; then
     echo "🧹 [1/3] Running terraform destroy on main-stack..."
     if [ -f "${REPO_ROOT}/iac/main-stack/terraform.tfvars" ]; then
@@ -30,13 +30,13 @@ if [ -d "${REPO_ROOT}/iac/remote-backend-stack" ]; then
     fi
 fi
 
-# 2. Check Python3 availability for orphan resources cleanup via OCI SDK
+# 2. Verifica a disponibilidade do Python3 para limpeza de recursos órfãos via OCI SDK
 if ! command -v python3 &> /dev/null; then
     echo "⚠️ Python3 not found in system. Completing destruction via Terraform."
     exit 0
 fi
 
-# Install oci library if needed
+# Instala a biblioteca oci se necessário
 python3 -c "import oci" 2>/dev/null || {
     echo "📦 Installing OCI Python SDK (oci)..."
     pip install --break-system-packages oci six 2>/dev/null || pip install oci six 2>/dev/null || true
